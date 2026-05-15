@@ -1,0 +1,58 @@
+- hosts: nfs
+  roles:
+    - role: nfs
+      nfs_exports:
+        - path: "/data/she"
+          ip: "172.16.1.0/24"
+
+- hosts: dbs
+  roles:
+    - role: db_item
+      item_db_name: "phpshe"
+      db_root_password: "mariohy"
+      db_server_ip: "localhost"
+
+- hosts: webs
+  vars:
+    # nginx conf
+    she_code_dir: "/code/she"
+    she_domain: "she.test.com"
+    # config.php
+    db_server_ip: "172.16.1.51"
+    she_db_name: "phpshe"
+    she_db_user: "mariohy"
+    she_db_pass: "mariohy"
+    # nfs
+    nfs_server_ip: "172.16.1.31"
+    nfs_export_path: "/data/she"
+    # db root pass
+    db_root_pass: "mariohy"
+    role_path: "roles/phpshe"
+    
+  pre_tasks:
+    - name: Install nfs-utils and mariadb
+      yum:
+        name: 
+          - nfs-utils
+          - mariadb
+        state: present
+  roles:
+    - phpshe
+  tasks:
+    - name: Deploy data package to NFS server
+      unarchive:
+        src: "{{ role_path }}/files/data.tar.gz"
+        dest: "{{ nfs_export_path }}/"
+        owner: www        
+        group: www
+        extra_opts: ['--strip-components=1']
+      delegate_to: "{{ nfs_server_ip }}"
+      run_once: true
+
+    - name: Mount PHPSHE data from NFS
+      mount:
+        path: "{{ she_code_dir }}/data"
+        src: "{{ nfs_server_ip }}:{{ nfs_export_path }}"
+        fstype: nfs
+        opts: defaults
+        state: mounted

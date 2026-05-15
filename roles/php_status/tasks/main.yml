@@ -1,0 +1,23 @@
+- name: Enable PHP-FPM status path in www.conf
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^;?pm.status_path\s*='
+    line: "pm.status_path = {{ php_fpm_status_path }}"
+    backrefs: no
+    state: present
+  notify: restart php-fpm server
+
+- name: Configure Nginx PHP status site
+  template:
+    src: php_status.conf.j2
+    dest: /etc/nginx/conf.d/php_status.conf
+  notify: restart nginx server
+
+- name: Ensure services are started and enabled
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - php-fpm
+    - nginx

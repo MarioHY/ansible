@@ -1,0 +1,16 @@
+---
+- hosts: all
+  roles:
+    - role: basic
+    - role: nfs
+      when: ansible_hostname == "nfs"
+    - role: backup
+      when: ansible_hostname == "backup"
+    - role: web
+      when: ansible_hostname is search "web"
+    - role: db
+      when: ansible_hostname == "db01"
+    - role: server
+      when: ansible_hostname is search "web*"
+
+

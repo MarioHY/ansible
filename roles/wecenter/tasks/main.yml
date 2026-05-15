@@ -1,0 +1,43 @@
+- name: Create wecenter Root Directory
+  file:
+    path: "{{ wecenter_code_dir }}"
+    state: directory
+    owner: www
+    group: www
+    mode: '0755'
+
+- name: Unarchive wecenter Source
+  unarchive:
+    src: "{{ wecenter_archive }}"
+    dest: "{{ wecenter_code_dir }}"
+    owner: www
+    group: www
+    copy: yes
+    extra_opts: ['--strip-components=1']
+
+- name: Generate database.php
+  template:
+    src: database.php.j2
+    dest: "{{ wecenter_code_dir  }}/system/config/database.php"
+    owner: www
+    group: www
+    mode: '0744'
+
+
+- name: Configure Nginx Vhost for wecenter
+  template:
+    src: wecenter.conf.j2
+    dest: /etc/nginx/conf.d/wecenter.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart nginx server
+
+- name: Fix permissions recurse
+  file:
+    path: "{{ wecenter_code_dir }}"
+    owner: www
+    group: www
+    recurse: yes
+    state: directory
+

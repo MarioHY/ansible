@@ -1,0 +1,9 @@
+server {
+        listen 80;
+        server_name status.test.com localhost 127.0.0.1;
+        charset utf-8,gbk;
+
+        location /nginx_status {
+                stub_status; # 当访问/nginx_status返回stub_status模块记录的nginx状态
+        }
+}

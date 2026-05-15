@@ -1,0 +1,5 @@
+nfs_gid: '666'
+nfs_uid: '666'
+nfs_exports: 
+  - path: /data
+    ip: 172.16.1.0/24

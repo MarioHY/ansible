@@ -1,0 +1,44 @@
+- name: Install NFS Server
+  yum:
+    name: nfs-utils
+    state: present
+
+- name: Create group www
+  group:
+    name: www
+    gid: "{{ nfs_gid }}"
+
+- name: Create user www
+  user:
+    name: www
+    uid: "{{ nfs_uid }}"
+    group: "{{ nfs_gid }}"
+    shell: /sbin/nologin
+    create_home: false
+
+- name: Create NFS directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: www
+    group: www
+    mode: '0755'
+  loop: "{{ nfs_exports }}"
+  when: nfs_exports | length > 0
+
+- name: Configure NFS exports incrementally
+  lineinfile:
+    path: /etc/exports
+    regexp: "^{{ item.path | regex_escape }}\\s+"
+    line: "{{ item.path }} {{ item.ip | default('172.16.1.0/24') }}(rw,sync,all_squash,anonuid={{ nfs_uid }},anongid={{ nfs_gid }})"
+    state: present
+    create: yes
+  loop: "{{ nfs_exports }}"
+  when: nfs_exports | length > 0
+  notify: reload nfs server
+
+- name: Ensure NFS service is started
+  systemd:
+    name: nfs
+    state: started
+    enabled: yes

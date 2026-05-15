@@ -1,0 +1,14 @@
+```yml
+- hosts: webs
+  roles:
+    - role: redis_phpconf
+      vars:
+        # Redis connection info     
+        redis_server_ip: "172.16.1.21"
+        redis_server_port: 6379     
+        # if redis has a password
+        # redis_server_auth: "123"  
+        php_ini_path: "/etc/php.ini"
+        php_fpm_www_conf: "/etc/php-fpm.d/www.conf"
+
+```

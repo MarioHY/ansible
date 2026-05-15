@@ -1,0 +1,45 @@
+- name: Create PHPSHE Root Directory
+  file:
+    path: "{{ she_code_dir }}"
+    state: directory
+    owner: www
+    group: www
+    mode: '0755'
+
+- name: Unarchive PHPSHE Code
+  unarchive:
+    src: phpshe1.8.tar.gz
+    dest: "{{ she_code_dir }}"
+    copy: yes
+    extra_opts: ['--strip-components=1']
+    creates: "{{ she_code_dir }}/index.php"
+
+- name: Deploy PHPSHE Configuration File
+  template:
+    src: config.php.j2
+    dest: "{{ she_code_dir }}/config.php"
+    owner: www
+    group: www
+    mode: '0644'
+
+- name: Ensure PHP session directory permission
+  file:
+    path: /var/lib/php/session
+    owner: www
+    group: www
+    state: directory
+    recurse: yes
+
+- name: Configure Nginx Vhost
+  template:
+    src: phpshe.conf.j2
+    dest: /etc/nginx/conf.d/phpshe.conf
+  notify: restart nginx server
+
+- name: Fix PHPSHE Directory Permissions
+  file:
+    path: "{{ she_code_dir }}"
+    owner: www
+    group: www
+    recurse: yes
+    state: directory

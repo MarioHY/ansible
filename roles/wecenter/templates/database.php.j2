@@ -1,0 +1,15 @@
+<?php
+
+$config['charset'] = 'utf8';
+$config['prefix'] = '';
+$config['driver'] = 'MySQLi';
+$config['master'] = array (
+  'charset' => 'utf8',
+  'host' => '{{ db_server_ip | default('172.16.1.51') }}',
+  'username' => '{{ wecenter_db_user }}',
+  'password' => '{{ wecenter_db_pass }}',
+  'dbname' => '{{ wecenter_db_name }}',
+  'port' => '3306',
+);
+$config['slave'] = false;
+$config['port'] = '3306';

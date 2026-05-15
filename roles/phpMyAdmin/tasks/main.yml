@@ -1,0 +1,41 @@
+- name: Create phpMyAdmin Root Directory
+  file:
+    path: "{{ pma_code_dir }}"
+    state: directory
+    owner: www
+    group: www
+    mode: '0755'
+
+- name: Unarchive phpMyAdmin Source
+  unarchive:
+    src: "{{ pma_archive }}"
+    dest: "{{ pma_code_dir }}"
+    owner: www
+    group: www
+    copy: yes
+    extra_opts: ['--strip-components=1']
+
+- name: configure {{ pma_code_dir }}/config.inc.php
+  template:
+    src: config.inc.php.j2
+    dest: "{{ pma_code_dir }}/config.inc.php"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure Nginx Vhost for phpMyAdmin
+  template:
+    src: phpmyadmin.conf.j2
+    dest: /etc/nginx/conf.d/phpmyadmin.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart nginx server
+
+- name: Fix permissions recurse
+  file:
+    path: "{{ pma_code_dir }}"
+    owner: www
+    group: www
+    recurse: yes
+    state: directory

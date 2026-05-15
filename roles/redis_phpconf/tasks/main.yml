@@ -1,0 +1,45 @@
+- name: Configure session.save_handler in php.ini
+  lineinfile:
+    path: "{{ php_ini_path }}"
+    regexp: '^session.save_handler ='
+    line: 'session.save_handler = redis'
+
+- name: Configure session.save_path in php.ini
+  lineinfile:
+    path: "{{ php_ini_path }}"
+    regexp: '^session.save_path ='
+    # Supports both password and non-password formats
+    line: 'session.save_path = "tcp://{{ redis_server_ip }}:{{ redis_server_port }}{% if redis_server_auth is defined %}?auth={{ redis_server_auth }}{% endif %}"'
+
+- name: Comment out local session path in www.conf
+  replace:
+    path: "{{ php_fpm_www_conf }}"
+    regexp: '^(php_value\[session\.(save_handler|save_path)\])'
+    replace: ';\1'
+  notify: restart php-fpm server
+
+- name: Enable session.auto_start in php.ini
+  lineinfile:
+    path: "{{ php_ini_path }}"
+    regexp: '^;?session.auto_start ='
+    line: 'session.auto_start = 1'
+
+- name: Check php.ini configuration results
+  shell: "egrep -n '^session.save_(handler|path)' {{ php_ini_path }}"
+  register: check_php_ini
+  changed_when: false
+
+- name: Display php.ini check results
+  debug:
+    var: check_php_ini.stdout_lines
+
+- name: Check www.conf configuration results
+  shell: "egrep -n 'session.save_(handler|path)' {{ php_fpm_www_conf }}"
+  register: check_www_conf
+  changed_when: false
+
+- name: Display www.conf check results
+  debug:
+    var: check_www_conf.stdout_lines
+
+

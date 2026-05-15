@@ -1,0 +1,33 @@
+- name: Install MariaDB and dependencies
+  yum:
+    name: 
+      - mariadb-server
+      - MySQL-python  
+
+# 2. 启动并开机自启
+- name: Ensure MariaDB is running
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Initialize root password
+  mysql_user:
+    name: root
+    password: "{{ db_root_password }}"
+    login_unix_socket: /var/lib/mysql/mysql.sock
+    check_implicit_admin: yes
+    state: present
+
+- name: Create service account (Universal Access)
+  mysql_user:
+    name: "{{ service_user }}"
+    password: "{{ service_password }}"
+    priv: "*.*:ALL"
+    host: "{{ item }}"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+  loop:
+    - "%"
+    - "localhost"

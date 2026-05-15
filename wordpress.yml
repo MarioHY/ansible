@@ -1,0 +1,43 @@
+- hosts: nfs
+  roles:
+    - role: nfs
+      nfs_exports:
+        - path: "/data/wp"
+          ip: "172.16.1.0/24"
+
+- hosts: dbs
+  roles:
+    - role: db_item  
+      item_db_name: "wordpress"
+      db_root_password: "mariohy"
+      db_server_ip: "localhost"
+
+- hosts: webs
+  vars:
+    # nfs
+    nfs_export_path: "/data/wp"
+    nfs_server_ip: "172.16.1.31"
+    # nginx conf
+    wp_code_dir: "/code/wordpress"
+    wp_domain: "wp.test.com"
+    # wp-config.php
+    wp_db_name: "wordpress"
+    wp_db_user: "mariohy"
+    wp_db_pass: "mariohy"
+    db_server_ip: "172.16.1.51"
+ 
+  roles:
+    - role: wordpress
+  tasks:
+    - name: Install nfs-utils
+      yum:
+        name: nfs-utils
+        state: present
+
+    - name: Mount WordPress uploads from NFS
+      mount:
+        path: "{{ wp_code_dir }}/wp-content/uploads"
+        src: "{{ nfs_server_ip }}:{{ nfs_export_path }}"
+        fstype: nfs
+        opts: defaults
+        state: mounted

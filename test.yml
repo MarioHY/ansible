@@ -1,0 +1,3 @@
+- hosts: web01
+  roles:
+    - role: php_status

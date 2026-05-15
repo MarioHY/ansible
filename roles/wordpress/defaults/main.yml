@@ -1,0 +1,9 @@
+# nginx配置信息
+wp_code_dir: "/code/wordpress"
+wp_domain: "wp.test.com"
+
+# wp-config.php的配置
+wp_db_name: "wordpress"
+wp_db_user: "mariohy"
+wp_db_pass: "mariohy"
+db_server_ip: "172.16.1.51"

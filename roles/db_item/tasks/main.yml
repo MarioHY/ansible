@@ -1,0 +1,8 @@
+---
+- name: "Create database: {{ item_db_name }}"
+  mysql_db:
+    name: "{{ item_db_name }}"
+    state: present
+    login_host: "{{ db_server_ip | default('localhost') }}"
+    login_user: "root"
+    login_password: "{{ db_root_password }}"

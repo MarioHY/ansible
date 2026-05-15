@@ -1,0 +1,51 @@
+server {
+    listen 80;
+    server_name {{ she_domain | default('she.test.com') }};
+    root {{ she_code_dir }};
+    
+    # 日志文件对齐
+    access_log /var/log/nginx/{{ she_domain | default('she.test.com') }}_access.log json_access;
+    error_log  /var/log/nginx/{{ she_domain | default('she.test.com') }}_error.log warn;
+
+    client_max_body_size 20m;
+
+    location / {
+        index index.php index.html;
+        # PHPSHE 伪静态支持
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|pdf|txt|woff|woff2|ttf|svg)$ {
+        expires 7d;
+        access_log off;
+        log_not_found off;
+        tcp_nodelay on;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404; 
+
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+
+        # 性能与缓冲区优化
+        fastcgi_keep_conn on;
+        fastcgi_connect_timeout 60s;
+        fastcgi_send_timeout 60s;
+        fastcgi_read_timeout 60s;
+        
+        fastcgi_buffer_size 64k;
+        fastcgi_buffers 4 64k;
+        fastcgi_busy_buffers_size 128k;
+        fastcgi_temp_file_write_size 128k;
+    }
+
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}

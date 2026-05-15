@@ -1,0 +1,21 @@
+- hosts: dbs
+  roles:
+    - role: db_item
+      item_db_name: "wecenter"
+      db_root_password: "mariohy"
+      db_server_ip: "localhost"
+
+- hosts: webs
+  vars:
+    # Archive filename in files/
+    wecenter_archive: "wecenter.tar.gz"
+    # nginx conf
+    wecenter_code_dir: "/code/wecenter"
+    wecenter_domain: "wecenter.test.com"
+    # database.php
+    wecenter_db_name: "wecenter"
+    wecenter_db_user: "mariohy"
+    wecenter_db_pass: "mariohy"
+    db_server_ip: "172.16.1.51"
+  roles:
+    - role: wecenter

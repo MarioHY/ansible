@@ -1,0 +1,10 @@
+<?php
+$pe['db_host'] = '{{ db_server_ip | default('172.16.1.51') }}'; //数据库主机地址
+$pe['db_name'] = '{{ she_db_name | default('phpshe') }}'; //数据库名称
+$pe['db_user'] = '{{ she_db_user | default('mariohy') }}'; //数据库用户名
+$pe['db_pw'] = '{{ she_db_pass | default('mariohy') }}'; //数据库密码
+$pe['db_coding'] = 'utf8';
+$pe['url_model'] = 'pathinfo_safe'; //url模式,可选项(pathinfo/pathinfo_safe/php)
+$pe['h5_host'] = ''; //手机版网址
+define('dbpre',''); //数据库表前缀
+?>

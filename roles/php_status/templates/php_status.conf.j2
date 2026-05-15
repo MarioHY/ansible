@@ -1,0 +1,10 @@
+server {
+    listen 80;
+    server_name php_status.test.com localhost 127.0.0.1;
+
+    location {{ php_fpm_status_path }} {
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}

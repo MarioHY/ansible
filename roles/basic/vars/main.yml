@@ -1,0 +1,16 @@
+ntp_servers:
+  - "ntp1.aliyun.com prefer"
+  - "ntp2.aliyun.com prefer"
+  - "cn.pool.ntp.org"
+  - "0.cn.pool.ntp.org"
+ntp_sync_method: "chronyd"
+basic_pack:
+  - lrzsz
+  - wget
+  - tree
+  - net-tools
+  - ntpdate
+  - bash-completion
+  - bash-completion-extras
+  - MySQL-python
+  - nfs-utils

@@ -1,0 +1,3 @@
+rsync_user: www
+rsync_port: 873
+rsync_dir: /backup

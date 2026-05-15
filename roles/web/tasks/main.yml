@@ -1,0 +1,41 @@
+- name: Install Nginx Server
+  yum:
+    name: nginx
+    state: present
+
+- name: Configure Nginx Server
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx server
+
+- name: check nginx conf
+  command: nginx -t
+  register: nginx_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Unarchive PHP.tar.gz
+  unarchive:
+    src: php71.tar.gz
+    dest: /opt/
+
+- name: Install PHP Server
+  yum:
+    name: "{{ php_pack }}"
+    state: present
+
+- name: Configure PHP Server
+  copy:
+    src: www.conf
+    dest: /etc/php-fpm.d/www.conf
+  notify: restart php server
+
+- name: Start Nginx and PHP Server
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - nginx
+    - php-fpm

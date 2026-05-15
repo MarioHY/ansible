@@ -1,0 +1,14 @@
+nfs ansible_ssh_host=192.168.192.31
+backup ansible_ssh_host=192.168.192.41
+redis ansible_ssh_host=192.168.192.21
+
+[webs]
+web01 ansible_ssh_host=192.168.192.7
+web02 ansible_ssh_host=192.168.192.8
+
+[dbs]
+db01 ansible_ssh_host=192.168.192.51
+# db02 ansible_ssh_host=192.168.192.52
+
+[all:vars]
+ansible_ssh_pass="0"

@@ -1,0 +1,10 @@
+# Archive filename in files/
+wecenter_archive: "wecenter.tar.gz"
+# nginx conf
+wecenter_code_dir: "/code/wecenter"
+wecenter_domain: "wecenter.test.com"
+# database.php
+wecenter_db_name: "wecenter"
+wecenter_db_user: "mariohy"
+wecenter_db_pass: "mariohy"
+db_server_ip: "172.16.1.51"

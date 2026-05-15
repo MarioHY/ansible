@@ -1,0 +1,24 @@
+- name: Delete Nginx default.conf
+  file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+
+- name: Deploy Nginx Conf
+  unarchive:
+    src: nginx_conf.tar.gz
+    dest: /etc/nginx/conf.d/
+    creates: /etc/nginx/conf.d/wordpress.conf # if exist，do nothing
+
+- name: Deploy Server Code
+  unarchive:
+    src: code.tar.gz
+    dest: /
+    creates: /code # if exist，do nothing
+
+- name: Restart Nginx Server
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - nginx
+    - php-fpm

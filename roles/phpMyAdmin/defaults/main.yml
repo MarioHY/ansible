@@ -1,0 +1,7 @@
+# Base configuration
+pma_code_dir: "/code/admin"
+pma_domain: "admin.test.com"
+
+# Archive filename in files/
+pma_archive: "phpMyAdmin-4.9.11-all-languages.tar.gz"
+pma_db_host: "172.16.1.51"

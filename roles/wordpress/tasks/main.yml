@@ -1,0 +1,38 @@
+- name: Create Web Root
+  file:
+    path: "{{ wp_code_dir }}"
+    state: directory
+    owner: www
+    group: www
+    mode: '0755'
+
+- name: Unarchive WordPress
+  unarchive:
+    src: wordpress.tar.gz
+    dest: "{{ wp_code_dir }}"
+    owner: www
+    group: www
+    copy: yes
+    extra_opts: ['--strip-components=1']
+
+- name: Generate wp-config.php
+  template:
+    src: wp-config.php.j2
+    dest: "{{ wp_code_dir }}/wp-config.php"
+    owner: www
+    group: www
+    mode: '0644'
+
+- name: Configure Vhost
+  template:
+    src: wordpress.conf.j2
+    dest: /etc/nginx/conf.d/wordpress.conf
+  notify: restart nginx server
+
+- name: Fix permissions recurse
+  file:
+    path: "{{ wp_code_dir }}"
+    owner: www
+    group: www
+    recurse: yes
+    state: directory 
